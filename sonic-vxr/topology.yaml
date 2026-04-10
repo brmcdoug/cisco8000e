@@ -24,8 +24,8 @@ devices:
         sudo ip addr add dev eth4 192.168.123.100/24
         sudo config hostname leaf00
         sudo config save -y
-    image: /home/cisco/images/8000-eft17.0/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
-    onie-install: /home/cisco/images/8000-eft17.0/packages/images/8000/sonic/sonic-cisco-8000.bin
+    image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
+    onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     qemu_args: -uuid 002aac7b-2e72-45aa-9722-0456901ea895
     port_breakout:
       lc0:
@@ -47,8 +47,8 @@ devices:
         sudo ip addr add dev eth4 192.168.123.101/24
         sudo config hostname leaf01
         sudo config save -y
-    image: /home/cisco/images/8000-eft17.0/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
-    onie-install: /home/cisco/images/8000-eft17.0/packages/images/8000/sonic/sonic-cisco-8000.bin
+    image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
+    onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     qemu_args: -uuid be46f561-2ca8-4670-addd-6619c4c58d5e
     port_breakout:
       lc0:
@@ -70,8 +70,8 @@ devices:
         sudo ip addr add dev eth4 192.168.123.102/24
         sudo config hostname spine00
         sudo config save -y
-    image: /home/cisco/images/8000-eft17.0/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
-    onie-install: /home/cisco/images/8000-eft17.0/packages/images/8000/sonic/sonic-cisco-8000.bin
+    image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
+    onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     qemu_args: -uuid eaf1870e-43ed-4806-bda3-4dc57bed8dd6
     port_breakout:
       lc0:
@@ -93,8 +93,8 @@ devices:
         sudo ip addr add dev eth4 192.168.123.103/24
         sudo config hostname spine01
         sudo config save -y
-    image: /home/cisco/images/8000-eft17.0/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
-    onie-install: /home/cisco/images/8000-eft17.0/packages/images/8000/sonic/sonic-cisco-8000.bin
+    image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
+    onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     qemu_args: -uuid be36fb91-8218-49eb-bda5-94fea84b5e1c
     port_breakout:
       lc0:
