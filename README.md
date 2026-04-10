@@ -4,10 +4,10 @@
 
 This repository contains four Cisco 8000 Emulator (8000e) projects or scenarios:
 
-1. [Cisco SONiC 8000e using Containerlab](./sonic-clab/)
-2. [Cisco SONiC 8000e using the VXR orchestrator](./sonic-vxr/)
-3. [Cisco IOS-XR 8000e using Containerlab](./xr-clab/)
-4. [Cisco IOS-XR 8000e using the VXR orchestrator](./xr-vxr/)
+1. [SONiC 8000e using Containerlab](./sonic-clab/)
+2. [SONiC 8000e using the VXR orchestrator](./sonic-vxr/)
+3. [IOS-XR 8000e using Containerlab](./xr-clab/)
+4. [IOS-XR 8000e using the VXR orchestrator](./xr-vxr/)
 
 Each directory contains the relevant *`containerlab`* or *`vxr`* topology yaml files, a readme, and sample configurations.
 
