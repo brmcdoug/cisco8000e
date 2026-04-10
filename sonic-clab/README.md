@@ -3,8 +3,8 @@
 This folder covers scenarios involving the *`8101-32FH-O`* and *`8122-64EHF-O`* platforms
 
 Requirements:
-* Ubuntu 22.04 or 24.04  
-* **4 vCPU, 10G memory per node** 
+* Ubuntu 22.04 
+* **4 vCPU, 12G memory per node** 
 * Containerlab (tested using 0.74.2)
 
 clab topology, configs, etc. can be found in subfolders:
