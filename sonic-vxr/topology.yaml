@@ -13,7 +13,7 @@ devices:
     platform: spitfire_f
     os_type: sonic
     #linecard_types: ['8122-64EHF-O'] 
-    linecard_types: ['8101-32HF-O']
+    linecard_types: ['8101-32FH']
     linux_username: "admin"
     linux_password: "password"
     custom_mgmt_inf: True
@@ -37,7 +37,7 @@ devices:
     platform: spitfire_f
     os_type: sonic
     #linecard_types: ['8122-64EHF-O'] 
-    linecard_types: ['8101-32HF-O']
+    linecard_types: ['8101-32FH']
     linux_username: "admin"
     linux_password: "password"
     custom_mgmt_inf: True
@@ -61,7 +61,7 @@ devices:
     platform: spitfire_f
     os_type: sonic
     #linecard_types: ['8122-64EHF-O'] 
-    linecard_types: ['8101-32HF-O']
+    linecard_types: ['8101-32FH']
     linux_username: "admin"
     linux_password: "password"
     custom_mgmt_inf: True
@@ -85,7 +85,7 @@ devices:
     platform: spitfire_f
     os_type: sonic
     #linecard_types: ['8122-64EHF-O'] 
-    linecard_types: ['8101-32HF-O']
+    linecard_types: ['8101-32FH']
     linux_username: "admin"
     linux_password: "password"
     custom_mgmt_inf: True
