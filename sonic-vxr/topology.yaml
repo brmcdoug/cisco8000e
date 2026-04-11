@@ -12,7 +12,8 @@ devices:
     console_ports: [40000]
     platform: spitfire_f
     os_type: sonic
-    linecard_types: ['8122-64EHF-O'] 
+    #linecard_types: ['8122-64EHF-O'] 
+    linecard_types: ['8101-32HF-O']
     linux_username: "admin"
     linux_password: "password"
     custom_mgmt_inf: True
@@ -27,15 +28,16 @@ devices:
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
     onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     qemu_args: -uuid 002aac7b-2e72-45aa-9722-0456901ea895
-    port_breakout:
-      lc0:
-        0..63: 2x400
+    # port_breakout:
+    #   lc0:
+    #     0..63: 2x400
 
   leaf01: 
     console_ports: [40001]
     platform: spitfire_f
     os_type: sonic
-    linecard_types: ['8122-64EHF-O'] 
+    #linecard_types: ['8122-64EHF-O'] 
+    linecard_types: ['8101-32HF-O']
     linux_username: "admin"
     linux_password: "password"
     custom_mgmt_inf: True
@@ -50,15 +52,16 @@ devices:
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
     onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     qemu_args: -uuid be46f561-2ca8-4670-addd-6619c4c58d5e
-    port_breakout:
-      lc0:
-        0..63: 2x400
+    # port_breakout:
+    #   lc0:
+    #     0..63: 2x400
 
   spine00: 
     console_ports: [40002]
     platform: spitfire_f
     os_type: sonic
-    linecard_types: ['8122-64EHF-O'] 
+    #linecard_types: ['8122-64EHF-O'] 
+    linecard_types: ['8101-32HF-O']
     linux_username: "admin"
     linux_password: "password"
     custom_mgmt_inf: True
@@ -73,15 +76,16 @@ devices:
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
     onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     qemu_args: -uuid eaf1870e-43ed-4806-bda3-4dc57bed8dd6
-    port_breakout:
-      lc0:
-        0..63: 2x400
+    # port_breakout:
+    #   lc0:
+    #     0..63: 2x400
 
   spine01: 
     console_ports: [40003]
     platform: spitfire_f
     os_type: sonic
-    linecard_types: ['8122-64EHF-O'] 
+    #linecard_types: ['8122-64EHF-O'] 
+    linecard_types: ['8101-32HF-O']
     linux_username: "admin"
     linux_password: "password"
     custom_mgmt_inf: True
@@ -96,25 +100,33 @@ devices:
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
     onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     qemu_args: -uuid be36fb91-8218-49eb-bda5-94fea84b5e1c
-    port_breakout:
-      lc0:
-        0..63: 2x400
+    # port_breakout:
+    #   lc0:
+    #     0..63: 2x400
 
 connections:
   hubs:
     l00s00:         
-      - leaf00.Ethernet0/0
-      - spine00.Ethernet0/0
+      # - leaf00.Ethernet0/0
+      # - spine00.Ethernet0/0
+      - leaf00.Ethernet0
+      - spine00.Ethernet0
 
     l00s01:         
-      - leaf00.Ethernet1/0
-      - spine01.Ethernet0/0
+      # - leaf00.Ethernet1/0
+      # - spine01.Ethernet0/0
+      - leaf00.Ethernet1
+      - spine01.Ethernet0
 
     l01s00:         
-      - leaf01.Ethernet0/0
-      - spine00.Ethernet1/0
+      # - leaf01.Ethernet0/0
+      # - spine00.Ethernet1/0
+      - leaf01.Ethernet0
+      - spine00.Ethernet1
 
     l01s01:         
-      - leaf01.Ethernet1/0
-      - spine01.Ethernet1/0
+      # - leaf01.Ethernet1/0
+      # - spine01.Ethernet1/0
+      - leaf01.Ethernet1
+      - spine01.Ethernet1
 
