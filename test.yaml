@@ -1,0 +1,40 @@
+name: 8101-32FH-test
+prefix: ""
+
+mgmt:
+  network: mgt
+  ipv4-subnet: 172.20.8.0/24
+
+topology:
+  nodes:
+
+# sonic nodes
+    leaf00:
+      kind: linux
+      image: vrnetlab/sonic_sonic-vs:8101-32FH
+      mgmt-ipv4: 172.20.8.64
+
+    leaf01:
+      kind: linux
+      image: vrnetlab/sonic_sonic-vs:8101-32FH
+      mgmt-ipv4: 172.20.8.65
+
+    spine00:
+      kind: linux
+      image: vrnetlab/sonic_sonic-vs:8101-32FH
+      mgmt-ipv4: 172.20.8.68
+
+    spine01:
+      kind: linux
+      image: vrnetlab/sonic_sonic-vs:8101-32FH
+      mgmt-ipv4: 172.20.8.69
+
+  links:
+
+    - endpoints: ["leaf00:eth1", "spine00:eth1"]
+    - endpoints: ["leaf00:eth2", "spine01:eth1"]
+
+    - endpoints: ["leaf01:eth1", "spine00:eth2"]
+    - endpoints: ["leaf01:eth2", "spine01:eth2"]
+
+
