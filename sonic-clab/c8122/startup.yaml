@@ -1,0 +1,107 @@
+simulation:
+    wait_for_interfaces: True
+
+devices:
+
+  R0:
+    platform: spitfire_f
+    os_type: sonic
+    image: /opt/cisco/images/onie-recovery-x86_64-cisco_8000-r0.iso
+    onie-install: /opt/cisco/images/sonic-cisco-8000.bin
+    memory: "20GB"
+    
+    linecard_types: ['8122-64EHF-O']
+    linux_username: admin
+    linux_password: password
+    num_fabcards: 1
+    console_ports: [60000,60001]
+    custom_mgmt_inf: True
+    # after booting onie, we will download sonic image via eth4
+    mgmt_gateway_ip: "192.168.123.1"
+    linux_config: |
+        ip addr add dev eth4 192.168.123.2/24
+        ip link set dev eth4 up
+    xr_config: |
+        sudo config interface ip add eth0 172.20.2.100/255.255.255.0 172.20.2.1
+        sudo config save -y
+    data_ports:
+    - Ethernet0
+    - Ethernet4
+    - Ethernet8
+    - Ethernet12
+    - Ethernet16
+    - Ethernet20
+    - Ethernet24
+    - Ethernet28
+    - Ethernet32
+    - Ethernet36
+    - Ethernet40
+    - Ethernet44
+    - Ethernet48
+    - Ethernet52
+    - Ethernet56
+    - Ethernet60
+    - Ethernet64
+    - Ethernet68
+    - Ethernet72
+    - Ethernet76
+    - Ethernet80
+    - Ethernet84
+    - Ethernet88
+    - Ethernet92
+    - Ethernet96
+    - Ethernet100
+    - Ethernet104
+    - Ethernet108
+    - Ethernet112
+    - Ethernet116
+    - Ethernet120
+    - Ethernet124
+    - Ethernet128
+    - Ethernet132
+    - Ethernet136
+    - Ethernet140
+    - Ethernet144
+    - Ethernet148
+    - Ethernet152
+    - Ethernet156
+    - Ethernet160
+    - Ethernet164
+    - Ethernet168
+    - Ethernet172
+    - Ethernet176
+    - Ethernet180
+    - Ethernet184
+    - Ethernet188
+    - Ethernet192
+    - Ethernet196
+    - Ethernet200
+    - Ethernet204
+    - Ethernet208
+    - Ethernet212
+    - Ethernet216
+    - Ethernet220
+    - Ethernet224
+    - Ethernet228
+    - Ethernet232
+    - Ethernet236
+    - Ethernet240
+    - Ethernet244
+    - Ethernet248
+    - Ethernet252
+
+
+connections:
+    custom:
+        mgmt:
+            ports: [R0.eth0]
+            ovs_bridge: mgmt_br
+            connection_type: tap   
+
+        eth1:
+            ports: [R0.eth1]
+            ovs_bridge: br-Port0
+        
+        eth2:
+            ports: [R0.eth2]
+            ovs_bridge: br-Port1

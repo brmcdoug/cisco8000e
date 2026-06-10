@@ -11,6 +11,7 @@ topology:
       image: c8000-clab-sonic:120
       binds: 
           - /opt/cisco/images:/images
+          - ./startup.yaml:/nobackup/startup.yaml
       env:
           IMAGE: /opt/cisco/images/sonic-cisco-8000.bin
           PID: '8122-64EHF-O'
