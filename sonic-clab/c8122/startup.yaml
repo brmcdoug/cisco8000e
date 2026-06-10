@@ -24,6 +24,9 @@ devices:
     xr_config: |
         sudo config interface ip add eth0 172.20.2.100/255.255.255.0 172.20.2.1
         sudo config save -y
+    port_breakout:
+      lc0:
+        0..63: 2x400 
     data_ports:
     - Ethernet0
     - Ethernet4
@@ -89,7 +92,70 @@ devices:
     - Ethernet244
     - Ethernet248
     - Ethernet252
-
+    - Ethernet256
+    - Ethernet260
+    - Ethernet264
+    - Ethernet268
+    - Ethernet272
+    - Ethernet276
+    - Ethernet280
+    - Ethernet284
+    - Ethernet288
+    - Ethernet292
+    - Ethernet296
+    - Ethernet300
+    - Ethernet304
+    - Ethernet308
+    - Ethernet312
+    - Ethernet316
+    - Ethernet320
+    - Ethernet324
+    - Ethernet328
+    - Ethernet332
+    - Ethernet336
+    - Ethernet340
+    - Ethernet344
+    - Ethernet348
+    - Ethernet352
+    - Ethernet356
+    - Ethernet360
+    - Ethernet364
+    - Ethernet368
+    - Ethernet372
+    - Ethernet376
+    - Ethernet380
+    - Ethernet384
+    - Ethernet388
+    - Ethernet392
+    - Ethernet396
+    - Ethernet400
+    - Ethernet404
+    - Ethernet408
+    - Ethernet412
+    - Ethernet416
+    - Ethernet420
+    - Ethernet424
+    - Ethernet428
+    - Ethernet432
+    - Ethernet436
+    - Ethernet440
+    - Ethernet444
+    - Ethernet448
+    - Ethernet452
+    - Ethernet456
+    - Ethernet460
+    - Ethernet464
+    - Ethernet468
+    - Ethernet472
+    - Ethernet476
+    - Ethernet480
+    - Ethernet484
+    - Ethernet488
+    - Ethernet492
+    - Ethernet496
+    - Ethernet500
+    - Ethernet504
+    - Ethernet508
 
 connections:
     custom:
