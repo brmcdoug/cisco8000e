@@ -8,7 +8,7 @@ mgmt:
 topology:
   kinds:
     linux:
-      image: c8000-clab-sonic:119
+      image: c8000-clab-sonic:120
       binds: 
           - /opt/cisco/images:/images
       env:
