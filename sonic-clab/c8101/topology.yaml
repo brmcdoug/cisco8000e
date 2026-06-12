@@ -9,7 +9,7 @@ topology:
   kinds:
     linux:
       #image: c8000-clab-sonic:94
-      image: c8000-clab-sonic:120
+      image: c8000-clab-sonic:121
       binds: 
           - /opt/cisco/images:/images
       env:
