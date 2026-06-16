@@ -1,0 +1,130 @@
+simulation:
+  slurm_flags:
+    pending_timeout: 1200
+    hours: 4800
+    partition: regression
+  sim_dir: /nobackup/ashu/mtd-sim
+  sim_host: localhost
+
+devices:
+  trex1: &host
+    data_ports:
+      - eth1
+      - eth2
+      - eth3
+      - eth4
+      - eth5
+      - eth6
+      - eth7
+      - eth8
+    data_port_attributes:
+      transport: e1000
+    linux_username: vxr
+    linux_password: cisco123
+    linux_prompt: vxr@ubuntu:~\$
+    image: /auto/vxr1/images/linux/ubuntu_serial.qcow2
+    memory: 4GB
+    platform: linux
+    vcpu: 4
+    xr_port_redir:
+      - 22
+
+  L0: &switch
+    image: /auto/vxr/images/onie-sonic/onie-recovery-x86_64-cisco_8000-r0-2020.11br.iso 
+    linecard_types: ['8122-64EHF-O']
+    port_breakout:
+       lc0:
+          0..63: 2x400
+    linux_username: admin
+    linux_password: password
+    onie-install: /ws/ashu-sjc/mtd-sim/sonic-cisco-8000.bin
+        # the below config prevet packet reaching nsim before the full initialization. We observer dsim crash when the packets are sent before the full initialization.
+        # the below config can be removed when dsim issue is fixed
+    os_type: sonic
+    memory: 20GB
+    vcpu: 10
+    platform: spitfire_f
+    vxr_sim_config:
+        shelf:
+          ConfigS1NpsuiteVer: "1.196.0"
+          ConfigS1SdkVer: "25.5.4140.4.0.dc"
+    data_ports:
+        - Ethernet0/0
+        - Ethernet0/1
+        - Ethernet1/0
+        - Ethernet1/1
+        - Ethernet2/0
+        - Ethernet2/1
+        - Ethernet3/0
+        - Ethernet3/1
+        - Ethernet4/0
+        - Ethernet4/1
+        - Ethernet5/0
+        - Ethernet5/1
+    xr_port_redir:
+      - 22
+#    cli_commands: |
+#      sleep 60
+#      sudo config hostname tortuga-deng-g200-leaf0
+#      sudo config save -y
+
+  ixia:
+    platform: ixia-web
+    ixia_images:
+      windows: /auto/vxr/images/ixia/IxNetworkWeb_KVM_10.00.2407.119.qcow2
+      chassis: /auto/vxr/images/ixia/Ixia_Virtual_Chassis_10.00_KVM.qcow2
+      load: /auto/vxr/images/ixia/Ixia_Virtual_Load_Module_10.00_KVM.qcow2
+      #windows: /auto/vxr/images/ixia/IxNetworkWeb_KVM_9.20.2206.28.qcow2
+      #chassis: /auto/vxr/images/ixia/Ixia_Virtual_Chassis_9.20_KVM.qcow2
+      #load: /auto/vxr/images/ixia/Ixia_Virtual_Load_Module_9.20_KVM.qcow2
+    data_ports:
+      - data[0..3]
+
+
+connections:
+  hubs:
+    hub0:
+      - L0.Ethernet0/0
+      - ixia.data0
+    hub1:
+      - L0.Ethernet0/1
+      - ixia.data1
+    hub2:
+      - L0.Ethernet1/0
+      - ixia.data2
+    hub3:
+      - L0.Ethernet1/1
+      - ixia.data3
+
+    L0_trex1_0:
+      - L0.Ethernet2/0
+      - trex1.eth1
+
+    L0_trex1_1:
+      - L0.Ethernet2/1
+      - trex1.eth2
+
+    L0_trex1_2:
+      - L0.Ethernet3/0
+      - trex1.eth3
+
+    L0_trex1_3:
+      - L0.Ethernet3/1
+      - trex1.eth4
+
+    L0_trex1_4:
+      - L0.Ethernet4/0
+      - trex1.eth5
+
+    L0_trex1_5:
+      - L0.Ethernet4/1
+      - trex1.eth6
+
+    L0_trex1_6:
+      - L0.Ethernet5/0
+      - trex1.eth7
+
+    L0_trex1_7:
+      - L0.Ethernet5/1
+      - trex1.eth8
+
