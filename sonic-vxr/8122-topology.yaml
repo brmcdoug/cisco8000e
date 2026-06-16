@@ -937,60 +937,60 @@ connections:
       - s01.Ethernet28
 
     # leaf02 to spine00
-    l02s00_1:         
-      - l02.Ethernet0
-      - s00.Ethernet32
-    l02s00_2:         
-      - l02.Ethernet4
-      - s00.Ethernet36
-    l02s00_3:         
-      - l02.Ethernet8
-      - s00.Ethernet40
-    l02s00_4:         
-      - l02.Ethernet12
-      - s00.Ethernet44
+    # l02s00_1:         
+    #   - l02.Ethernet0
+    #   - s00.Ethernet32
+    # l02s00_2:         
+    #   - l02.Ethernet4
+    #   - s00.Ethernet36
+    # l02s00_3:         
+    #   - l02.Ethernet8
+    #   - s00.Ethernet40
+    # l02s00_4:         
+    #   - l02.Ethernet12
+    #   - s00.Ethernet44
 
     # leaf02 to spine01
-    l02s01_1:         
-      - l02.Ethernet16
-      - s01.Ethernet32
-    l02s01_2:         
-      - l02.Ethernet20
-      - s01.Ethernet36
-    l02s01_3:         
-      - l02.Ethernet24
-      - s01.Ethernet40
-    l02s01_4:         
-      - l02.Ethernet28
-      - s01.Ethernet44
+    # l02s01_1:         
+    #   - l02.Ethernet16
+    #   - s01.Ethernet32
+    # l02s01_2:         
+    #   - l02.Ethernet20
+    #   - s01.Ethernet36
+    # l02s01_3:         
+    #   - l02.Ethernet24
+    #   - s01.Ethernet40
+    # l02s01_4:         
+    #   - l02.Ethernet28
+    #   - s01.Ethernet44
 
     # leaf03 to spine00
-    l03s00_1:         
-      - l03.Ethernet0
-      - s00.Ethernet48
-    l03s00_2:         
-      - l03.Ethernet4
-      - s00.Ethernet52
-    l03s00_3:         
-      - l03.Ethernet8
-      - s00.Ethernet56
-    l03s00_4:         
-      - l03.Ethernet12
-      - s00.Ethernet60
+    # l03s00_1:         
+    #   - l03.Ethernet0
+    #   - s00.Ethernet48
+    # l03s00_2:         
+    #   - l03.Ethernet4
+    #   - s00.Ethernet52
+    # l03s00_3:         
+    #   - l03.Ethernet8
+    #   - s00.Ethernet56
+    # l03s00_4:         
+    #   - l03.Ethernet12
+    #   - s00.Ethernet60
 
     # leaf03 to spine01
-    l03s01_1:         
-      - l03.Ethernet16
-      - s01.Ethernet48
-    l03s01_2:         
-      - l03.Ethernet20
-      - s01.Ethernet52
-    l03s01_3:         
-      - l03.Ethernet24
-      - s01.Ethernet56
-    l03s01_4:         
-      - l03.Ethernet28
-      - s01.Ethernet60
+    # l03s01_1:         
+    #   - l03.Ethernet16
+    #   - s01.Ethernet48
+    # l03s01_2:         
+    #   - l03.Ethernet20
+    #   - s01.Ethernet52
+    # l03s01_3:         
+    #   - l03.Ethernet24
+    #   - s01.Ethernet56
+    # l03s01_4:         
+    #   - l03.Ethernet28
+    #   - s01.Ethernet60
 
 
   # custom:
