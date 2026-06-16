@@ -13,8 +13,8 @@ devices:
     os_type: sonic
     linecard_types:
     - 8122-64EHF-O
-    linux_username: "cisco"
-    linux_password: "cisco123"
+    linux_username: "admin"
+    linux_password: "password"
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
     onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     cli_commands: |
@@ -158,8 +158,8 @@ devices:
     os_type: sonic
     linecard_types:
     - 8122-64EHF-O
-    linux_username: "cisco"
-    linux_password: "cisco123"
+    linux_username: "admin"
+    linux_password: "password"
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
     onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     cli_commands: |
@@ -303,8 +303,8 @@ devices:
   #   os_type: sonic
   #   linecard_types:
   #   - 8122-64EHF-O
-  #   linux_username: "cisco"
-  #   linux_password: "cisco123"
+  #   linux_username: "admin"
+  #   linux_password: "password"
   #   image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
   #   onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
   #   cli_commands: |
@@ -448,8 +448,8 @@ devices:
   #   os_type: sonic
   #   linecard_types:
   #   - 8122-64EHF-O
-  #   linux_username: "cisco"
-  #   linux_password: "cisco123"
+  #   linux_username: "admin"
+  #   linux_password: "password"
   #   image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
   #   onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
   #   cli_commands: |
@@ -593,8 +593,8 @@ devices:
     os_type: sonic
     linecard_types:
     - 8122-64EHF-O
-    linux_username: "cisco"
-    linux_password: "cisco123"
+    linux_username: "admin"
+    linux_password: "password"
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
     onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     cli_commands: |
@@ -738,8 +738,8 @@ devices:
     os_type: sonic
     linecard_types:
     - 8122-64EHF-O
-    linux_username: "cisco"
-    linux_password: "cisco123"
+    linux_username: "admin"
+    linux_password: "password"
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
     onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
     cli_commands: |
