@@ -1,8 +1,8 @@
 # topology
 #
-#          s00  s01           
-#        X  X  X  X
-#     l00  l01  l02  l03
+#     s00 s01           
+#      | X |
+#     l00 l01  
 
 simulation:
   no_image_copy: true
@@ -16,7 +16,8 @@ devices:
     linux_username: "admin"
     linux_password: "password"
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
-    onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
+    #onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
+    onie-install: /home/cisco/images/sonic-cisco-8000-202511.bin
     cli_commands: |
                 sudo config hostname leaf00
                 sudo config interface ip add eth0 192.168.122.128/24
@@ -161,7 +162,8 @@ devices:
     linux_username: "admin"
     linux_password: "password"
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
-    onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
+    #onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
+    onie-install: /home/cisco/images/sonic-cisco-8000-202511.bin
     cli_commands: |
                 sudo config hostname leaf01
                 sudo config interface ip add eth0 192.168.122.129/24
@@ -596,7 +598,8 @@ devices:
     linux_username: "admin"
     linux_password: "password"
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
-    onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
+    #onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
+    onie-install: /home/cisco/images/sonic-cisco-8000-202511.bin
     cli_commands: |
                 sudo config hostname spine00
                 sudo config interface ip add eth0 192.168.122.192/24
@@ -741,7 +744,8 @@ devices:
     linux_username: "admin"
     linux_password: "password"
     image: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/onie-recovery-x86_64-cisco_8000-r0.iso
-    onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
+    #onie-install: /home/cisco/images/8000-eft17.1/packages/images/8000/sonic/sonic-cisco-8000.bin
+    onie-install: /home/cisco/images/sonic-cisco-8000-202511.bin
     cli_commands: |
                 sudo config hostname spine01
                 sudo config interface ip add eth0 192.168.122.193/24
