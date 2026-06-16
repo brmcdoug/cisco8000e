@@ -1,0 +1,154 @@
+simulation:
+  no_image_copy: true
+
+devices:
+
+  leaf00: 
+    image: /home/cisco/images/202511/onie-recovery-x86_64-cisco_8000-r0-2020.11br.iso 
+    linecard_types: ['8122-64EHF-O']
+    port_breakout:
+       lc0:
+          0..63: 2x400
+    linux_username: admin
+    linux_password: password
+    onie-install: /home/cisco/images/sonic-cisco-8000-202511.bin
+    os_type: sonic
+    memory: 20GB
+    #vcpu: 10
+    platform: spitfire_f
+    vxr_sim_config:
+        shelf:
+          ConfigS1NpsuiteVer: "1.196.0"
+          ConfigS1SdkVer: "25.5.4140.4.0.dc"
+    data_ports:
+        - Ethernet0/0
+        - Ethernet0/1
+        - Ethernet1/0
+        - Ethernet1/1
+        - Ethernet2/0
+        - Ethernet2/1
+        - Ethernet3/0
+        - Ethernet3/1
+    xr_port_redir:
+      - 22
+
+  leaf01: 
+    image: /home/cisco/images/202511/onie-recovery-x86_64-cisco_8000-r0-2020.11br.iso 
+    linecard_types: ['8122-64EHF-O']
+    port_breakout:
+       lc0:
+          0..63: 2x400
+    linux_username: admin
+    linux_password: password
+    onie-install: /home/cisco/images/sonic-cisco-8000-202511.bin
+    os_type: sonic
+    memory: 20GB
+    #vcpu: 10
+    platform: spitfire_f
+    vxr_sim_config:
+        shelf:
+          ConfigS1NpsuiteVer: "1.196.0"
+          ConfigS1SdkVer: "25.5.4140.4.0.dc"
+    data_ports:
+        - Ethernet0/0
+        - Ethernet0/1
+        - Ethernet1/0
+        - Ethernet1/1
+        - Ethernet2/0
+        - Ethernet2/1
+        - Ethernet3/0
+        - Ethernet3/1
+    xr_port_redir:
+      - 22
+
+  spine00: 
+    image: /home/cisco/images/202511/onie-recovery-x86_64-cisco_8000-r0-2020.11br.iso 
+    linecard_types: ['8122-64EHF-O']
+    port_breakout:
+       lc0:
+          0..63: 2x400
+    linux_username: admin
+    linux_password: password
+    onie-install: /home/cisco/images/sonic-cisco-8000-202511.bin
+    os_type: sonic
+    memory: 20GB
+    #vcpu: 10
+    platform: spitfire_f
+    vxr_sim_config:
+        shelf:
+          ConfigS1NpsuiteVer: "1.196.0"
+          ConfigS1SdkVer: "25.5.4140.4.0.dc"
+    data_ports:
+        - Ethernet0/0
+        - Ethernet0/1
+        - Ethernet1/0
+        - Ethernet1/1
+        - Ethernet2/0
+        - Ethernet2/1
+        - Ethernet3/0
+        - Ethernet3/1
+    xr_port_redir:
+      - 22
+
+  spine01: 
+    image: /home/cisco/images/202511/onie-recovery-x86_64-cisco_8000-r0-2020.11br.iso 
+    linecard_types: ['8122-64EHF-O']
+    port_breakout:
+       lc0:
+          0..63: 2x400
+    linux_username: admin
+    linux_password: password
+    onie-install: /home/cisco/images/sonic-cisco-8000-202511.bin
+    os_type: sonic
+    memory: 20GB
+    #vcpu: 10
+    platform: spitfire_f
+    vxr_sim_config:
+        shelf:
+          ConfigS1NpsuiteVer: "1.196.0"
+          ConfigS1SdkVer: "25.5.4140.4.0.dc"
+    data_ports:
+        - Ethernet0/0
+        - Ethernet0/1
+        - Ethernet1/0
+        - Ethernet1/1
+        - Ethernet2/0
+        - Ethernet2/1
+        - Ethernet3/0
+        - Ethernet3/1
+    xr_port_redir:
+      - 22
+
+connections:
+  hubs:
+    l00s00-0:
+      - leaf00.Ethernet0/0
+      - spine00.Ethernet0/0
+    l00s00-1:
+      - leaf00.Ethernet0/1
+      - spine00.Ethernet0/1
+
+    l00s01-0:
+      - leaf00.Ethernet1/0
+      - spine01.Ethernet0/0
+    l00s01-1:
+      - leaf00.Ethernet1/1
+      - spine01.Ethernet0/1
+
+    l01s00-0:
+      - leaf01.Ethernet0/0
+      - spine00.Ethernet1/0
+    l01s00-1:
+      - leaf01.Ethernet0/1
+      - spine00.Ethernet1/1
+      
+    l01s01-0:
+      - leaf01.Ethernet1/0
+      - spine01.Ethernet1/0
+    l01s01-1:
+      - leaf01.Ethernet1/1
+      - spine01.Ethernet1/1
+
+
+
+
