@@ -109,7 +109,15 @@ cat /home/admin/tetragon/tetragon-stdout.log
 
 Tetragon is **allow-by-default**: only matching operations are affected. Everything outside `/home/admin/test` is unchanged.
 
-The enforce policy hooks **`security_inode_create`** (block empty file creation) plus **`security_file_permission`** (block writes to existing files). If you only use the latter, tools like `tee` and `cp` can leave **zero-byte files** because the kernel creates the inode before the write is denied.
+The enforce policy blocks **`sys_openat`** to paths under `/home/admin/test/` when the process opens for write or create (primary), plus **`security_file_permission`** as a backup.
+
+**Why not `security_path_truncate`?** Tools like `tee` and `cp` use `O_CREAT|O_TRUNC`. A truncate hook fires *after* the kernel creates an empty inode, so you see `Permission denied` but still get zero-byte files. **`sys_openat` with `Override`** blocks at syscall entry instead.
+
+If creates are still not blocked, check error injection support on the guest:
+
+```bash
+sudo grep -E 'sys_openat|security_file_permission' /sys/kernel/debug/error_injection/list 2>/dev/null || echo "mount debugfs or check CONFIG_BPF_KPROBE_OVERRIDE"
+```
 
 ## Enable blocking (optional)
 

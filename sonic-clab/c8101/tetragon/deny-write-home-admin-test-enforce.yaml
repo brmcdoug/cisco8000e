@@ -1,46 +1,48 @@
 # Enforce: deny creates and writes under /home/admin/test only.
 # Tetragon is allow-by-default; only matching operations are affected.
 #
-# security_file_permission alone blocks writes but leaves empty files (O_CREAT runs first).
-# security_inode_create blocks the inode from being created at all.
+# Why sys_openat (not security_inode_create / security_path_truncate):
+# - tee/cp use open(O_CREAT|O_TRUNC). Truncate hooks fire AFTER the empty inode
+#   exists, so Override on truncate yields "Permission denied" + zero-byte files.
+# - Override on security_inode_create only works if that symbol is in the kernel
+#   error-injection list (often it is not). sys_openat Override is the supported path.
 #
-# Uses Override (EACCES) instead of Sigkill so a mis-tuned rule is less likely to kill SSH.
+# Uses Override (EACCES) instead of Sigkill so tee/cp fail cleanly without killing SSH.
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
   name: deny-write-home-admin-test-enforce
 spec:
   kprobes:
-    # Block new file/dir creation when parent is /home/admin/test or a subdirectory.
-    - call: "security_inode_create"
-      syscall: false
-      return: true
+    # Block open/openat that creates or opens for write under the test directory.
+    # No "return: true" — Override replaces the syscall at entry (see Tetragon selectors docs).
+    - call: "sys_openat"
+      syscall: true
       args:
         - index: 0
-          type: "path" # parent directory of the new inode
-      returnArg:
-        index: 0
-        type: "int"
+          type: "int"
+        - index: 1
+          type: "string"
+        - index: 2
+          type: "int"
       selectors:
         - matchArgs:
-            - index: 0
-              operator: "Equal"
-              values:
-                - "/home/admin/test"
-          matchActions:
-            - action: Override
-              argError: -13
-        - matchArgs:
-            - index: 0
+            - index: 1
               operator: "Prefix"
               values:
                 - "/home/admin/test/"
+            - index: 2
+              operator: "Mask"
+              values:
+                - "64" # O_CREAT
+                - "1"  # O_WRONLY
+                - "2"  # O_RDWR
           matchActions:
             - action: Override
               argError: -13
-      ignore:
-        callNotFound: true
+            - action: NoPost
 
+    # Backup: writes to paths already opened (or odd code paths that skip openat match).
     - call: "security_file_permission"
       syscall: false
       return: true
@@ -65,66 +67,3 @@ spec:
           matchActions:
             - action: Override
               argError: -13
-        - matchArgs:
-            - index: 0
-              operator: "Equal"
-              values:
-                - "/home/admin/test"
-            - index: 1
-              operator: "Equal"
-              values:
-                - "2"
-          matchActions:
-            - action: Override
-              argError: -13
-
-    - call: "security_path_truncate"
-      syscall: false
-      return: true
-      args:
-        - index: 0
-          type: "path"
-      returnArg:
-        index: 0
-        type: "int"
-      selectors:
-        - matchArgs:
-            - index: 0
-              operator: "Prefix"
-              values:
-                - "/home/admin/test/"
-          matchActions:
-            - action: Override
-              argError: -13
-        - matchArgs:
-            - index: 0
-              operator: "Equal"
-              values:
-                - "/home/admin/test"
-          matchActions:
-            - action: Override
-              argError: -13
-      ignore:
-        callNotFound: true
-
-    # Linux >= 6.2 (skip silently on 6.1 guest)
-    - call: "security_file_truncate"
-      syscall: false
-      return: true
-      args:
-        - index: 0
-          type: "file"
-      returnArg:
-        index: 0
-        type: "int"
-      selectors:
-        - matchArgs:
-            - index: 0
-              operator: "Prefix"
-              values:
-                - "/home/admin/test/"
-          matchActions:
-            - action: Override
-              argError: -13
-      ignore:
-        callNotFound: true

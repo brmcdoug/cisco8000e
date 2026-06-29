@@ -1,36 +1,37 @@
-# Observe-only: log creates and writes under /home/admin/test without blocking.
+# Observe-only: log open/create/write attempts under /home/admin/test without blocking.
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
   name: deny-write-home-admin-test-observe
 spec:
   kprobes:
-    - call: "security_inode_create"
-      syscall: false
+    - call: "sys_openat"
+      syscall: true
       return: true
       args:
         - index: 0
-          type: "path"
+          type: "int"
+        - index: 1
+          type: "string"
+        - index: 2
+          type: "int"
       returnArg:
         index: 0
         type: "int"
       selectors:
         - matchArgs:
-            - index: 0
-              operator: "Equal"
-              values:
-                - "/home/admin/test"
-          matchActions:
-            - action: Post
-        - matchArgs:
-            - index: 0
+            - index: 1
               operator: "Prefix"
               values:
                 - "/home/admin/test/"
+            - index: 2
+              operator: "Mask"
+              values:
+                - "64"
+                - "1"
+                - "2"
           matchActions:
             - action: Post
-      ignore:
-        callNotFound: true
 
     - call: "security_file_permission"
       syscall: false
@@ -55,41 +56,3 @@ spec:
                 - "2"
           matchActions:
             - action: Post
-        - matchArgs:
-            - index: 0
-              operator: "Equal"
-              values:
-                - "/home/admin/test"
-            - index: 1
-              operator: "Equal"
-              values:
-                - "2"
-          matchActions:
-            - action: Post
-
-    - call: "security_path_truncate"
-      syscall: false
-      return: true
-      args:
-        - index: 0
-          type: "path"
-      returnArg:
-        index: 0
-        type: "int"
-      selectors:
-        - matchArgs:
-            - index: 0
-              operator: "Prefix"
-              values:
-                - "/home/admin/test/"
-          matchActions:
-            - action: Post
-        - matchArgs:
-            - index: 0
-              operator: "Equal"
-              values:
-                - "/home/admin/test"
-          matchActions:
-            - action: Post
-      ignore:
-        callNotFound: true
