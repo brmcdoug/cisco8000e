@@ -8,8 +8,8 @@ mgmt:
 topology:
   kinds:
     linux:
-      #image: c8000-clab-sonic:94
-      image: c8000-clab-sonic:121
+      image: c8000-clab-sonic:94
+      #image: c8000-clab-sonic:121
       binds: 
           - /opt/cisco/images:/images
       env:
@@ -26,13 +26,17 @@ topology:
       kind: linux
       mgmt-ipv4: 172.20.2.101
 
-    spine00:
+    leaf02:
       kind: linux
       mgmt-ipv4: 172.20.2.102
 
-    spine01:
+    spine00:
       kind: linux
       mgmt-ipv4: 172.20.2.103
+
+    spine01:
+      kind: linux
+      mgmt-ipv4: 172.20.2.104
 
 
   links:
@@ -42,4 +46,7 @@ topology:
 
     - endpoints: ["leaf01:eth1", "spine00:eth2"]
     - endpoints: ["leaf01:eth2", "spine01:eth2"]
+
+    - endpoints: ["leaf02:eth1", "spine00:eth3"]
+    - endpoints: ["leaf02:eth2", "spine01:eth3"]
 
