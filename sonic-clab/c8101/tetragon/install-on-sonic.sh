@@ -51,58 +51,12 @@ echo "==> Uploading to ${SONIC_SSH}:${REMOTE_DIR}"
 ssh_cmd "rm -rf ${REMOTE_DIR} && mkdir -p ${REMOTE_DIR}/policies"
 scp_cmd -r "${WORK}/tetragon-${TETRAGON_VERSION}-amd64/"* "${SONIC_SSH}:${REMOTE_DIR}/"
 scp_cmd "${SCRIPT_DIR}/deny-write-home-admin-test-observe.yaml" "${SONIC_SSH}:${REMOTE_DIR}/policies/"
+scp_cmd "${SCRIPT_DIR}/start-tetragon.sh" "${SCRIPT_DIR}/tetra.sh" "${SCRIPT_DIR}/stop-tetragon.sh" \
+  "${SONIC_SSH}:${REMOTE_DIR}/"
+ssh_cmd "chmod +x ${REMOTE_DIR}/start-tetragon.sh ${REMOTE_DIR}/tetra.sh ${REMOTE_DIR}/stop-tetragon.sh"
 
-ssh_cmd bash -s <<REMOTE
-set -euo pipefail
-REMOTE_DIR="${REMOTE_DIR}"
-cat > "\${REMOTE_DIR}/start-tetragon.sh" <<'EOF'
-#!/bin/bash
-set -euo pipefail
-BASE="$(cd "$(dirname "$0")" && pwd)"
-PIDFILE="${BASE}/tetragon.pid"
-LOG="${BASE}/tetragon.log"
-SOCK="${BASE}/tetragon.sock"
-BPF="${BASE}/usr/local/lib/tetragon/bpf"
-BIN="${BASE}/usr/local/bin/tetragon"
-POLICY_DIR="${BASE}/policies"
-
-if [[ -f "${PIDFILE}" ]] && kill -0 "$(cat "${PIDFILE}")" 2>/dev/null; then
-  echo "Tetragon already running (pid $(cat "${PIDFILE}"))"
-  exit 0
-fi
-
-sudo "${BIN}" \
-  --bpf-lib "${BPF}" \
-  --server-address "unix://${SOCK}" \
-  --tracing-policy-dir "${POLICY_DIR}" \
-  --export-filename "${LOG}" \
-  > "${BASE}/tetragon-stdout.log" 2>&1 &
-echo $! | sudo tee "${PIDFILE}" >/dev/null
-sleep 2
-echo "Tetragon started (pid $(cat "${PIDFILE}")). Events: ${LOG}"
-EOF
-
-cat > "\${REMOTE_DIR}/tetra.sh" <<'EOF'
-#!/bin/bash
-BASE="$(cd "$(dirname "$0")" && pwd)"
-exec sudo "${BASE}/usr/local/bin/tetra" --server-address "unix://${BASE}/tetragon.sock" "$@"
-EOF
-
-cat > "\${REMOTE_DIR}/stop-tetragon.sh" <<'EOF'
-#!/bin/bash
-BASE="$(cd "$(dirname "$0")" && pwd)"
-if [[ -f "${BASE}/tetragon.pid" ]]; then
-  sudo kill "$(cat "${BASE}/tetragon.pid")" 2>/dev/null || true
-  rm -f "${BASE}/tetragon.pid"
-fi
-echo "Stopped."
-EOF
-
-chmod +x "\${REMOTE_DIR}/start-tetragon.sh" "\${REMOTE_DIR}/tetra.sh" "\${REMOTE_DIR}/stop-tetragon.sh"
-REMOTE
-
-chmod +x "${SCRIPT_DIR}/install-on-sonic.sh"
-
+echo ""
+echo "Install complete on ${SONIC_SSH}."
 echo ""
 echo "On the SONiC guest:"
 echo "  ssh ${SONIC_SSH}   # password: ${SONIC_PASS}"
