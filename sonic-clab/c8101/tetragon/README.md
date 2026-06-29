@@ -110,15 +110,13 @@ cat /home/admin/tetragon/tetragon-stdout.log
 
 Tetragon is **allow-by-default**: only matching operations are affected. Everything outside `/home/admin/test` is unchanged.
 
-The enforce policy blocks **`sys_openat`** to paths under `/home/admin/test/` when the process opens for write or create (primary), plus **`security_file_permission`** as a backup.
+The enforce policy blocks **`security_inode_create`** (prevent empty file creation) and **`security_file_permission`** (block writes). It does **not** use `sys_openat` — your kernel reports:
 
-**Why not `security_path_truncate`?** Tools like `tee` and `cp` use `O_CREAT|O_TRUNC`. A truncate hook fires *after* the kernel creates an empty inode, so you see `Permission denied` but still get zero-byte files. **`sys_openat` with `Override`** blocks at syscall entry instead.
+`override action not supported on syscalls, bpf_override_return helper not available`
 
-If creates are still not blocked, check error injection support on the guest:
+**Do not** put both `deny-write-home-admin-test-enforce.yaml` and `*-fallback.yaml` in `policies/` at once. Keep only one enforce file plus optionally the observe file.
 
-```bash
-sudo grep -E 'sys_openat|security_file_permission' /sys/kernel/debug/error_injection/list 2>/dev/null || echo "mount debugfs or check CONFIG_BPF_KPROBE_OVERRIDE"
-```
+**Do not** use `security_path_truncate` for this demo — it denies after the empty inode already exists.
 
 ## Troubleshooting: Tetragon exits immediately
 
@@ -136,28 +134,20 @@ If `start-tetragon.sh` reports success but `ps` shows no tetragon and `tetra get
 tail -40 /home/admin/tetragon/tetragon-stdout.log
 ```
 
-3. **Recover** by swapping to the fallback policy (file-permission only):
+3. **Recover** — keep a single enforce policy in `policies/`:
 
 ```bash
 mkdir -p /home/admin/tetragon/policies/disabled
-mv /home/admin/tetragon/policies/deny-write-home-admin-test-enforce.yaml \
-   /home/admin/tetragon/policies/disabled/
-cp /home/admin/tetragon/deny-write-home-admin-test-enforce-fallback.yaml \
+mv /home/admin/tetragon/policies/deny-write-home-admin-test-enforce-fallback.yaml \
+   /home/admin/tetragon/policies/disabled/ 2>/dev/null || true
+# Update enforce.yaml from git (no sys_openat), then:
+cp /home/admin/tetragon/deny-write-home-admin-test-enforce.yaml \
    /home/admin/tetragon/policies/
+/home/admin/tetragon/stop-tetragon.sh
 /home/admin/tetragon/start-tetragon.sh
 ```
 
-4. Test whether `sys_openat` Override is supported:
-
-```bash
-sudo grep sys_openat /sys/kernel/debug/error_injection/list
-```
-
-If `sys_openat` is missing, use the fallback policy or load enforce via `tetra tracingpolicy add` and read the error:
-
-```bash
-/home/admin/tetragon/tetra.sh tracingpolicy add /path/to/deny-write-home-admin-test-enforce.yaml
-```
+4. **Syscall Override not available** on this SONiC image — `sys_openat` + `Override` will always fail. Security hooks (`security_*`) still work.
 
 ## Enable blocking (optional)
 

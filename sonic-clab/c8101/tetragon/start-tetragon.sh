@@ -10,33 +10,37 @@ BPF="${BASE}/usr/local/lib/tetragon/bpf"
 BIN="${BASE}/usr/local/bin/tetragon"
 POLICY_DIR="${BASE}/policies"
 
-if [[ -f "${PIDFILE}" ]] && kill -0 "$(cat "${PIDFILE}")" 2>/dev/null; then
-  echo "Tetragon already running (pid $(cat "${PIDFILE}"))"
+if pgrep -f "${BASE}/usr/local/bin/tetragon" >/dev/null 2>&1; then
+  echo "Tetragon already running (pid $(pgrep -f "${BASE}/usr/local/bin/tetragon" | head -1))"
   exit 0
 fi
 
 rm -f "${PIDFILE}" "${SOCK}"
+: > "${STDOUT}"
 
-sudo "${BIN}" \
+sudo nohup "${BIN}" \
   --bpf-lib "${BPF}" \
   --server-address "unix://${SOCK}" \
   --tracing-policy-dir "${POLICY_DIR}" \
   --export-filename "${LOG}" \
-  > "${STDOUT}" 2>&1 &
-echo $! | sudo tee "${PIDFILE}" >/dev/null
+  >> "${STDOUT}" 2>&1 &
 
-sleep 3
-PID="$(cat "${PIDFILE}")"
-if ! kill -0 "${PID}" 2>/dev/null; then
-  echo "ERROR: Tetragon exited immediately (pid ${PID}). Last log lines:"
-  tail -n 40 "${STDOUT}" 2>/dev/null || true
+sleep 5
+
+if grep -q "Failed to execute tetragon" "${STDOUT}" 2>/dev/null; then
+  echo "ERROR: Tetragon failed to start. Log tail:"
+  tail -n 20 "${STDOUT}" || true
   rm -f "${PIDFILE}" "${SOCK}"
-  echo ""
-  echo "If the log mentions sys_openat or policy load failure, try the fallback policy:"
-  echo "  mv ${POLICY_DIR}/deny-write-home-admin-test-enforce.yaml ${POLICY_DIR}/disabled/"
-  echo "  cp ${BASE}/deny-write-home-admin-test-enforce-fallback.yaml ${POLICY_DIR}/"
-  echo "  ${BASE}/start-tetragon.sh"
   exit 1
 fi
 
+PID="$(pgrep -f "${BASE}/usr/local/bin/tetragon" | head -1 || true)"
+if [[ -z "${PID}" ]]; then
+  echo "ERROR: Tetragon process not found. Log tail:"
+  tail -n 30 "${STDOUT}" || true
+  rm -f "${PIDFILE}" "${SOCK}"
+  exit 1
+fi
+
+echo "${PID}" > "${PIDFILE}"
 echo "Tetragon running (pid ${PID}). Events: ${LOG}"
