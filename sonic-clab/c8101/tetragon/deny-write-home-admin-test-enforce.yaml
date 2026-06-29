@@ -1,12 +1,46 @@
-# Enforce: deny writes/creates/truncates under /home/admin/test only.
+# Enforce: deny creates and writes under /home/admin/test only.
 # Tetragon is allow-by-default; only matching operations are affected.
-# Uses Override (EACCES) instead of Sigkill so a mis-tuned rule is less likely to kill your SSH session.
+#
+# security_file_permission alone blocks writes but leaves empty files (O_CREAT runs first).
+# security_inode_create blocks the inode from being created at all.
+#
+# Uses Override (EACCES) instead of Sigkill so a mis-tuned rule is less likely to kill SSH.
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
   name: deny-write-home-admin-test-enforce
 spec:
   kprobes:
+    # Block new file/dir creation when parent is /home/admin/test or a subdirectory.
+    - call: "security_inode_create"
+      syscall: false
+      return: true
+      args:
+        - index: 0
+          type: "path" # parent directory of the new inode
+      returnArg:
+        index: 0
+        type: "int"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
+                - "/home/admin/test"
+          matchActions:
+            - action: Override
+              argError: -13
+        - matchArgs:
+            - index: 0
+              operator: "Prefix"
+              values:
+                - "/home/admin/test/"
+          matchActions:
+            - action: Override
+              argError: -13
+      ignore:
+        callNotFound: true
+
     - call: "security_file_permission"
       syscall: false
       return: true
@@ -23,14 +57,26 @@ spec:
             - index: 0
               operator: "Prefix"
               values:
+                - "/home/admin/test/"
+            - index: 1
+              operator: "Equal"
+              values:
+                - "2" # MAY_WRITE
+          matchActions:
+            - action: Override
+              argError: -13
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
                 - "/home/admin/test"
             - index: 1
               operator: "Equal"
               values:
-                - "2" # MAY_WRITE — covers echo >>, cp dest, touch, etc.
+                - "2"
           matchActions:
             - action: Override
-              argError: -13 # -EACCES
+              argError: -13
 
     - call: "security_path_truncate"
       syscall: false
@@ -46,7 +92,39 @@ spec:
             - index: 0
               operator: "Prefix"
               values:
+                - "/home/admin/test/"
+          matchActions:
+            - action: Override
+              argError: -13
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
                 - "/home/admin/test"
           matchActions:
             - action: Override
               argError: -13
+      ignore:
+        callNotFound: true
+
+    # Linux >= 6.2 (skip silently on 6.1 guest)
+    - call: "security_file_truncate"
+      syscall: false
+      return: true
+      args:
+        - index: 0
+          type: "file"
+      returnArg:
+        index: 0
+        type: "int"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "Prefix"
+              values:
+                - "/home/admin/test/"
+          matchActions:
+            - action: Override
+              argError: -13
+      ignore:
+        callNotFound: true

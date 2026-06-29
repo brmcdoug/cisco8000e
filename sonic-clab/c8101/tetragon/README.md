@@ -105,9 +105,11 @@ cat /home/admin/tetragon/tetragon-stdout.log
 | File | Behavior |
 |------|----------|
 | `deny-write-home-admin-test-observe.yaml` | Logs writes under `/home/admin/test` only (**default after install**) |
-| `deny-write-home-admin-test-enforce.yaml` | Denies writes there with `Override` / `-EACCES` (not `Sigkill`) |
+| `deny-write-home-admin-test-enforce.yaml` | Denies **creation and writes** there with `Override` / `-EACCES` (not `Sigkill`) |
 
 Tetragon is **allow-by-default**: only matching operations are affected. Everything outside `/home/admin/test` is unchanged.
+
+The enforce policy hooks **`security_inode_create`** (block empty file creation) plus **`security_file_permission`** (block writes to existing files). If you only use the latter, tools like `tee` and `cp` can leave **zero-byte files** because the kernel creates the inode before the write is denied.
 
 ## Enable blocking (optional)
 
@@ -121,12 +123,21 @@ rm /home/admin/tetragon/policies/deny-write-home-admin-test-observe.yaml
 /home/admin/tetragon/start-tetragon.sh
 ```
 
+Remove any **empty files** left over from an earlier policy version, then restart Tetragon:
+
+```bash
+sudo rm -f /home/admin/test/*
+/home/admin/tetragon/stop-tetragon.sh
+/home/admin/tetragon/start-tetragon.sh
+```
+
 Test:
 
 ```bash
-echo blocked | sudo tee /home/admin/test/nope.txt   # Permission denied
-echo ok | sudo tee /home/admin/ok.txt               # still works
-sudo cp /home/admin/ok.txt /home/admin/test/copy.txt # blocked (write to test dir)
+echo blocked | sudo tee /home/admin/test/nope.txt   # Permission denied; file should NOT appear
+echo ok | sudo tee /home/admin/ok.txt                 # still works
+sudo cp /home/admin/ok.txt /home/admin/test/copy.txt # Permission denied; no copy.txt
+ls /home/admin/test                                  # should be empty (or only pre-existing allowed files)
 ```
 
 ## Stop / rollback
