@@ -1,31 +1,28 @@
 {
     "DEVICE_METADATA": {
         "localhost": {
-            "mac": "02:42:ac:14:06:66",
+            "mac": "02:42:ac:14:06:65",
             "switch_type": "switch",
             "buffer_model": "traditional",
-            "hostname": "spine00",
-            "bgp_asn": "65000",
+            "hostname": "leaf02",
+            "bgp_asn": "65003",
             "docker_routing_config_mode": "split"
         }
     },
     
     "LOOPBACK_INTERFACE": {
         "Loopback0": {},
-        "Loopback0|10.0.0.0/32": {},
-        "Loopback0|fc00:0:1000::1/128": {}
+        "Loopback0|10.0.0.4/32": {},
+        "Loopback0|fc00:0:1004::1/128": {}
     },
 
     "INTERFACE": {
         "Ethernet0": {},
-        "Ethernet0|10.1.1.0/31": {},
-        "Ethernet0|2001:db8:1:1::0/127": {},
+        "Ethernet0|10.1.1.5/31": {},
+        "Ethernet0|2001:db8:1:1::5/127": {},
         "Ethernet8": {},
-        "Ethernet8|10.1.1.2/31": {},
-        "Ethernet8|2001:db8:1:1::2/127": {},
-        "Ethernet16": {},
-        "Ethernet16|10.1.1.4/31": {},
-        "Ethernet16|2001:db8:1:1::4/127": {}
+        "Ethernet8|10.1.1.13/31": {},
+        "Ethernet8|2001:db8:1:1::13/127": {}
     },
     "PORT": {
         "Ethernet0": {

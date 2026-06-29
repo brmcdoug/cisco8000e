@@ -157,13 +157,6 @@ When ready to enforce, from the Containerlab host:
 scp deny-write-home-admin-test-enforce.yaml admin@172.20.2.100:/home/admin/tetragon/policies/
 ssh admin@172.20.2.100
 rm /home/admin/tetragon/policies/deny-write-home-admin-test-observe.yaml
-/home/admin/tetragon/stop-tetragon.sh
-/home/admin/tetragon/start-tetragon.sh
-```
-
-Remove any **empty files** left over from an earlier policy version, then restart Tetragon:
-
-```bash
 sudo rm -f /home/admin/test/*
 /home/admin/tetragon/stop-tetragon.sh
 /home/admin/tetragon/start-tetragon.sh
@@ -177,6 +170,38 @@ echo ok | sudo tee /home/admin/ok.txt                 # still works
 sudo cp /home/admin/ok.txt /home/admin/test/copy.txt # Permission denied; no copy.txt
 ls /home/admin/test                                  # should be empty (or only pre-existing allowed files)
 ```
+
+## SONiC CLI: allow `show`, block `config`
+
+Policy file: `deny-sonic-config-enforce.yaml` (separate from the `/home/admin/test` file policy).
+
+SONiC `config` and `show` are usually Python scripts. Tetragon matches `python3` plus `argv[1]` pointing at the **config** script, so **`show` is not blocked**.
+
+```bash
+cp /home/admin/tetragon/deny-sonic-config-enforce.yaml /home/admin/tetragon/policies/
+/home/admin/tetragon/stop-tetragon.sh
+/home/admin/tetragon/start-tetragon.sh
+```
+
+Verify paths on your image (adjust the YAML if these differ):
+
+```bash
+readlink -f "$(which config)"
+readlink -f "$(which show)"
+head -1 "$(which config)"
+```
+
+Demo:
+
+```bash
+show ip interfaces status          # allowed
+show vlan brief                    # allowed
+sudo config interface ip add Ethernet0 10.1.1.1/24   # blocked (process killed)
+```
+
+Use `deny-sonic-config-observe.yaml` first if you want to confirm matches in `tetra getevents` without blocking.
+
+**Caution:** this blocks **every** `config` invocation, including `config load` / `config save` and Ansible playbooks that call `config`. Remove the policy from `policies/` before running automation.
 
 ## Stop / rollback
 
@@ -194,8 +219,11 @@ Remove policies from `/home/admin/tetragon/policies/` and restart, or delete `/h
 | `start-tetragon.sh` | Start daemon on guest (installed to `/home/admin/tetragon/`) |
 | `tetra.sh` | CLI wrapper for `getevents`, `tracingpolicy add/delete`, etc. |
 | `stop-tetragon.sh` | Stop daemon |
-| `deny-write-home-admin-test-observe.yaml` | Observe-only policy |
-| `deny-write-home-admin-test-enforce.yaml` | Enforce policy |
+| `deny-write-home-admin-test-observe.yaml` | Observe-only file policy |
+| `deny-write-home-admin-test-enforce.yaml` | Enforce file policy (`/home/admin/test`) |
+| `deny-write-home-admin-test-enforce-fallback.yaml` | File enforce without `security_inode_create` |
+| `deny-sonic-config-observe.yaml` | Observe SONiC `config` exec |
+| `deny-sonic-config-enforce.yaml` | Block SONiC `config` exec; allow `show` |
 
 ## Tips
 

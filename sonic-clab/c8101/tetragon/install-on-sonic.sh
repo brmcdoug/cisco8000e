@@ -51,7 +51,10 @@ echo "==> Uploading to ${SONIC_SSH}:${REMOTE_DIR}"
 ssh_cmd "rm -rf ${REMOTE_DIR} && mkdir -p ${REMOTE_DIR}/policies"
 scp_cmd -r "${WORK}/tetragon-${TETRAGON_VERSION}-amd64/"* "${SONIC_SSH}:${REMOTE_DIR}/"
 scp_cmd "${SCRIPT_DIR}/deny-write-home-admin-test-observe.yaml" "${SONIC_SSH}:${REMOTE_DIR}/policies/"
-scp_cmd "${SCRIPT_DIR}/deny-write-home-admin-test-enforce-fallback.yaml" "${SONIC_SSH}:${REMOTE_DIR}/"
+scp_cmd "${SCRIPT_DIR}/deny-write-home-admin-test-enforce-fallback.yaml" \
+  "${SCRIPT_DIR}/deny-sonic-config-enforce.yaml" \
+  "${SCRIPT_DIR}/deny-sonic-config-observe.yaml" \
+  "${SONIC_SSH}:${REMOTE_DIR}/"
 scp_cmd "${SCRIPT_DIR}/start-tetragon.sh" "${SCRIPT_DIR}/tetra.sh" "${SCRIPT_DIR}/stop-tetragon.sh" \
   "${SONIC_SSH}:${REMOTE_DIR}/"
 ssh_cmd "chmod +x ${REMOTE_DIR}/start-tetragon.sh ${REMOTE_DIR}/tetra.sh ${REMOTE_DIR}/stop-tetragon.sh"
