@@ -1,0 +1,33 @@
+# Fallback enforce policy if sys_openat Override is unsupported on your kernel.
+# Tetragon should start with this; writes are blocked but empty files may still appear
+# (same behavior as the first enforce version). Use when the main enforce yaml crashes tetragon.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: deny-write-home-admin-test-enforce-fallback
+spec:
+  kprobes:
+    - call: "security_file_permission"
+      syscall: false
+      return: true
+      args:
+        - index: 0
+          type: "file"
+        - index: 1
+          type: "int"
+      returnArg:
+        index: 0
+        type: "int"
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: "Prefix"
+              values:
+                - "/home/admin/test/"
+            - index: 1
+              operator: "Equal"
+              values:
+                - "2"
+          matchActions:
+            - action: Override
+              argError: -13

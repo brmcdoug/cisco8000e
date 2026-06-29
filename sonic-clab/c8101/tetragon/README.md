@@ -105,7 +105,8 @@ cat /home/admin/tetragon/tetragon-stdout.log
 | File | Behavior |
 |------|----------|
 | `deny-write-home-admin-test-observe.yaml` | Logs writes under `/home/admin/test` only (**default after install**) |
-| `deny-write-home-admin-test-enforce.yaml` | Denies **creation and writes** there with `Override` / `-EACCES` (not `Sigkill`) |
+| `deny-write-home-admin-test-enforce.yaml` | Primary enforce (sys_openat + file permission) |
+| `deny-write-home-admin-test-enforce-fallback.yaml` | Use if primary enforce prevents Tetragon from starting |
 
 Tetragon is **allow-by-default**: only matching operations are affected. Everything outside `/home/admin/test` is unchanged.
 
@@ -117,6 +118,45 @@ If creates are still not blocked, check error injection support on the guest:
 
 ```bash
 sudo grep -E 'sys_openat|security_file_permission' /sys/kernel/debug/error_injection/list 2>/dev/null || echo "mount debugfs or check CONFIG_BPF_KPROBE_OVERRIDE"
+```
+
+## Troubleshooting: Tetragon exits immediately
+
+If `start-tetragon.sh` reports success but `ps` shows no tetragon and `tetra getevents` gets **connection refused**, a policy in `policies/` failed to load and the daemon exited.
+
+1. Re-run start (updated script prints the log tail):
+
+```bash
+/home/admin/tetragon/start-tetragon.sh
+```
+
+2. Or read the log directly:
+
+```bash
+tail -40 /home/admin/tetragon/tetragon-stdout.log
+```
+
+3. **Recover** by swapping to the fallback policy (file-permission only):
+
+```bash
+mkdir -p /home/admin/tetragon/policies/disabled
+mv /home/admin/tetragon/policies/deny-write-home-admin-test-enforce.yaml \
+   /home/admin/tetragon/policies/disabled/
+cp /home/admin/tetragon/deny-write-home-admin-test-enforce-fallback.yaml \
+   /home/admin/tetragon/policies/
+/home/admin/tetragon/start-tetragon.sh
+```
+
+4. Test whether `sys_openat` Override is supported:
+
+```bash
+sudo grep sys_openat /sys/kernel/debug/error_injection/list
+```
+
+If `sys_openat` is missing, use the fallback policy or load enforce via `tetra tracingpolicy add` and read the error:
+
+```bash
+/home/admin/tetragon/tetra.sh tracingpolicy add /path/to/deny-write-home-admin-test-enforce.yaml
 ```
 
 ## Enable blocking (optional)

@@ -1,11 +1,8 @@
 # Enforce: deny creates and writes under /home/admin/test only.
 # Tetragon is allow-by-default; only matching operations are affected.
 #
-# Why sys_openat (not security_inode_create / security_path_truncate):
-# - tee/cp use open(O_CREAT|O_TRUNC). Truncate hooks fire AFTER the empty inode
-#   exists, so Override on truncate yields "Permission denied" + zero-byte files.
-# - Override on security_inode_create only works if that symbol is in the kernel
-#   error-injection list (often it is not). sys_openat Override is the supported path.
+# sys_openat Override requires return/returnArg (see Tetragon selectors docs).
+# Requires CONFIG_BPF_KPROBE_OVERRIDE and sys_openat in error_injection list.
 #
 # Uses Override (EACCES) instead of Sigkill so tee/cp fail cleanly without killing SSH.
 apiVersion: cilium.io/v1alpha1
@@ -14,10 +11,9 @@ metadata:
   name: deny-write-home-admin-test-enforce
 spec:
   kprobes:
-    # Block open/openat that creates or opens for write under the test directory.
-    # No "return: true" — Override replaces the syscall at entry (see Tetragon selectors docs).
     - call: "sys_openat"
       syscall: true
+      return: true
       args:
         - index: 0
           type: "int"
@@ -25,6 +21,9 @@ spec:
           type: "string"
         - index: 2
           type: "int"
+      returnArg:
+        index: 0
+        type: "int"
       selectors:
         - matchArgs:
             - index: 1
@@ -42,7 +41,6 @@ spec:
               argError: -13
             - action: NoPost
 
-    # Backup: writes to paths already opened (or odd code paths that skip openat match).
     - call: "security_file_permission"
       syscall: false
       return: true
