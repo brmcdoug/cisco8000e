@@ -26,9 +26,9 @@ topology:
       kind: linux
       mgmt-ipv4: 172.20.2.101
 
-    leaf02:
-      kind: linux
-      mgmt-ipv4: 172.20.2.102
+    # leaf02:
+    #   kind: linux
+    #   mgmt-ipv4: 172.20.2.102
 
     spine00:
       kind: linux
@@ -47,6 +47,6 @@ topology:
     - endpoints: ["leaf01:eth1", "spine00:eth2"]
     - endpoints: ["leaf01:eth2", "spine01:eth2"]
 
-    - endpoints: ["leaf02:eth1", "spine00:eth3"]
-    - endpoints: ["leaf02:eth2", "spine01:eth3"]
+    # - endpoints: ["leaf02:eth1", "spine00:eth3"]
+    # - endpoints: ["leaf02:eth2", "spine01:eth3"]
 

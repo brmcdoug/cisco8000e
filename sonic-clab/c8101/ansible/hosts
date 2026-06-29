@@ -4,7 +4,7 @@ localhost ansible_connection=local
 [sonic]
 leaf00 ansible_host=172.20.2.100
 leaf01 ansible_host=172.20.2.101
-leaf02 ansible_host=172.20.2.102
+#leaf02 ansible_host=172.20.2.102
 spine01 ansible_host=172.20.2.103
 spine00 ansible_host=172.20.2.104
 
