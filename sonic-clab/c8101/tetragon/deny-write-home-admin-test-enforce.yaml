@@ -1,5 +1,5 @@
 # Enforce: deny creates and writes under /home/admin/test only.
-# Tetragon is allow-by-default; only matching operations are affected.
+# Tetragon in this demo is allow-by-default; only matching operations are affected.
 #
 # This SONiC kernel (6.1) does NOT support Override on syscalls (no bpf_override_return
 # for sys_openat). Use security_* LSM hooks instead.

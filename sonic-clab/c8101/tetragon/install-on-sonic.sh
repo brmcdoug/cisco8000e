@@ -54,6 +54,8 @@ scp_cmd "${SCRIPT_DIR}/deny-write-home-admin-test-observe.yaml" "${SONIC_SSH}:${
 scp_cmd "${SCRIPT_DIR}/deny-write-home-admin-test-enforce-fallback.yaml" \
   "${SCRIPT_DIR}/deny-sonic-config-enforce.yaml" \
   "${SCRIPT_DIR}/deny-sonic-config-observe.yaml" \
+  "${SCRIPT_DIR}/deny-outbound-ssh-sonic-lab-enforce.yaml" \
+  "${SCRIPT_DIR}/deny-outbound-ssh-sonic-lab-observe.yaml" \
   "${SONIC_SSH}:${REMOTE_DIR}/"
 scp_cmd "${SCRIPT_DIR}/start-tetragon.sh" "${SCRIPT_DIR}/tetra.sh" "${SCRIPT_DIR}/stop-tetragon.sh" \
   "${SONIC_SSH}:${REMOTE_DIR}/"

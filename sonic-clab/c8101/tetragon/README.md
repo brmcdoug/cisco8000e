@@ -169,6 +169,35 @@ Use `deny-sonic-config-observe.yaml` first if you want to confirm matches in `te
 
 **Caution:** this blocks **every** `config` invocation, including `config load` / `config save` and Ansible playbooks that call `config`. Remove the policy from `policies/` before running automation.
 
+### Outbound SSH: block lateral movement to other lab nodes
+
+Policy files: `deny-outbound-ssh-sonic-lab-enforce.yaml` (and `-observe.yaml`).
+
+Blocks **outbound** TCP connections to port **22** on the c8101 management subnet (`172.20.2.0/24` — leaf00–leaf02, spine00–spine01 per `topology.yaml`). A compromised node cannot `ssh admin@172.20.2.101` to pivot to another switch.
+
+- **Inbound SSH** (you logging into leaf00) is **not** affected — only `connect()` attempts from processes on the node.
+- **Other traffic** (BGP, ping, HTTPS, SSH to hosts outside `172.20.2.0/24`) is unchanged.
+- Can run **alongside** the file and config policies (different hooks).
+
+```bash
+cp /home/admin/tetragon/deny-outbound-ssh-sonic-lab-enforce.yaml /home/admin/tetragon/policies/
+/home/admin/tetragon/stop-tetragon.sh
+/home/admin/tetragon/start-tetragon.sh
+```
+
+Demo (from leaf00, after enforce is loaded):
+
+```bash
+ssh -o StrictHostKeyChecking=no admin@172.20.2.101   # Connection refused / Permission denied
+nc -vz 172.20.2.101 22                             # also blocked (any TCP/22 to lab mgmt)
+ping 172.20.2.101                                  # still allowed (ICMP)
+curl -s --connect-timeout 2 https://example.com    # still allowed (not port 22)
+```
+
+Use `-observe.yaml` first to confirm `security_socket_connect` events in `tetra getevents` before enforcing.
+
+**Note:** this also blocks **you** from SSH'ing *out* from leaf00 to other lab nodes while the policy is active. Remove from `policies/` when you need cross-node SSH from the guest.
+
 ### Stop / rollback
 
 ```bash
@@ -190,6 +219,8 @@ Remove policies from `/home/admin/tetragon/policies/` and restart, or delete `/h
 | `deny-write-home-admin-test-enforce-fallback.yaml` | File enforce without `security_inode_create` |
 | `deny-sonic-config-observe.yaml` | Observe SONiC `config` exec |
 | `deny-sonic-config-enforce.yaml` | Block SONiC `config` exec; allow `show` |
+| `deny-outbound-ssh-sonic-lab-observe.yaml` | Observe outbound TCP/22 to lab mgmt net |
+| `deny-outbound-ssh-sonic-lab-enforce.yaml` | Block outbound SSH to other c8101 nodes |
 
 ### Tips
 
