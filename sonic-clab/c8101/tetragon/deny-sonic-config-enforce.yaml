@@ -3,9 +3,9 @@
 # SONiC config/show are usually Python scripts (#!/usr/bin/python3). matchBinaries
 # sees the interpreter, not the script — match argv[1] for the config script path.
 #
-# Uses Sigkill (works on this kernel; syscall Override does not).
-# Allow-by-default: "show" and other commands are unaffected.
+# matchArgs only supports Equal/Prefix/Postfix/etc. — not "In" (use multiple selectors).
 #
+# Uses Sigkill (works on this kernel; syscall Override does not).
 # Warning: blocks ALL config invocations, including automation (ansible config load).
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
@@ -21,7 +21,6 @@ spec:
         - index: 1
           type: "string"
       selectors:
-        # Native config binary (if not a shebang script on your image)
         - matchBinaries:
             - operator: "In"
               values:
@@ -30,7 +29,6 @@ spec:
           matchActions:
             - action: Sigkill
 
-        # Python shebang: execve(python3, [..., "/usr/local/bin/config", ...])
         - matchBinaries:
             - operator: "In"
               values:
@@ -38,14 +36,25 @@ spec:
                 - "/usr/local/bin/python3"
           matchArgs:
             - index: 1
-              operator: "In"
+              operator: "Equal"
               values:
                 - "/usr/local/bin/config"
+          matchActions:
+            - action: Sigkill
+
+        - matchBinaries:
+            - operator: "In"
+              values:
+                - "/usr/bin/python3"
+                - "/usr/local/bin/python3"
+          matchArgs:
+            - index: 1
+              operator: "Equal"
+              values:
                 - "/usr/bin/config"
           matchActions:
             - action: Sigkill
 
-        # Fallback if argv[1] is a relative path ending in /config
         - matchBinaries:
             - operator: "In"
               values:

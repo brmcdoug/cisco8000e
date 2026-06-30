@@ -20,6 +20,7 @@ spec:
                 - "/usr/bin/config"
           matchActions:
             - action: Post
+
         - matchBinaries:
             - operator: "In"
               values:
@@ -27,12 +28,25 @@ spec:
                 - "/usr/local/bin/python3"
           matchArgs:
             - index: 1
-              operator: "In"
+              operator: "Equal"
               values:
                 - "/usr/local/bin/config"
+          matchActions:
+            - action: Post
+
+        - matchBinaries:
+            - operator: "In"
+              values:
+                - "/usr/bin/python3"
+                - "/usr/local/bin/python3"
+          matchArgs:
+            - index: 1
+              operator: "Equal"
+              values:
                 - "/usr/bin/config"
           matchActions:
             - action: Post
+
         - matchBinaries:
             - operator: "In"
               values:

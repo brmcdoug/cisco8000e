@@ -135,7 +135,7 @@ ls /home/admin/test                                  # should be empty (or only 
 
 Policy file: `deny-sonic-config-enforce.yaml` (separate from the `/home/admin/test` file policy).
 
-SONiC `config` and `show` are usually Python scripts. Tetragon matches `python3` plus `argv[1]` pointing at the **config** script, so **`show` is not blocked**.
+SONiC `config` and `show` are usually Python scripts. Tetragon matches `python3` plus `argv[1]` pointing at the **config** script (`matchArgs` uses `Equal`/`Postfix` — not `In`).
 
 ```bash
 cp /home/admin/tetragon/deny-sonic-config-enforce.yaml /home/admin/tetragon/policies/
