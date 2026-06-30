@@ -135,9 +135,12 @@ ls /home/admin/test                                  # should be empty (or only 
 
 Policy file: `deny-sonic-config-enforce.yaml` (separate from the `/home/admin/test` file policy).
 
-SONiC `config` and `show` are usually Python scripts. Tetragon matches `python3` plus `argv[1]` pointing at the **config** script (`matchArgs` uses `Equal`/`Postfix` — not `In`).
+SONiC `config` and `show` are Python scripts. **`sys_execve` + Sigkill does not block them** on this kernel — binfmt runs the interpreter, so the syscall hook never sees `/usr/local/bin/config` as the executable. Use **`security_bprm_check`** (and `security_bprm_creds_from_file` as backup) with **`Override` / `-13` (EACCES)**, same as the working file policy.
+
+Only load **one** enforce policy type at a time while testing (file *or* config), or keep the file policy in `policies/disabled/` when demoing CLI blocking.
 
 ```bash
+# Copy updated policy from git, then on leaf00:
 cp /home/admin/tetragon/deny-sonic-config-enforce.yaml /home/admin/tetragon/policies/
 /home/admin/tetragon/stop-tetragon.sh
 /home/admin/tetragon/start-tetragon.sh
@@ -151,12 +154,15 @@ readlink -f "$(which show)"
 head -1 "$(which config)"
 ```
 
+Optional: load `deny-sonic-config-observe.yaml` first and watch for `security_bprm_check` events with `linux_binprm` path `/usr/local/bin/config` before enabling enforce.
+
 Demo:
 
 ```bash
 show ip interfaces status          # allowed
 show vlan brief                    # allowed
-sudo config interface ip add Ethernet0 10.1.1.1/24   # blocked (process killed)
+sudo config interface ip add Ethernet16 9.9.9.1/24   # Permission denied; IP should NOT appear
+show ip int                        # Ethernet16 unchanged
 ```
 
 Use `deny-sonic-config-observe.yaml` first if you want to confirm matches in `tetra getevents` without blocking.

@@ -1,11 +1,9 @@
 # Enforce: block SONiC "config" CLI; allow "show" and everything else.
 #
-# SONiC config/show are usually Python scripts (#!/usr/bin/python3). matchBinaries
-# sees the interpreter, not the script — match argv[1] for the config script path.
+# sys_execve + Sigkill does NOT block on this SONiC image: config/show are Python
+# scripts executed via binfmt (kernel execs the interpreter, not the script path).
+# Use security_* LSM hooks with Override (same mechanism as the file policy).
 #
-# matchArgs only supports Equal/Prefix/Postfix/etc. — not "In" (use multiple selectors).
-#
-# Uses Sigkill (works on this kernel; syscall Override does not).
 # Warning: blocks ALL config invocations, including automation (ansible config load).
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
@@ -13,57 +11,60 @@ metadata:
   name: deny-sonic-config-enforce
 spec:
   kprobes:
-    - call: "sys_execve"
-      syscall: true
+    # Primary: deny exec when the binary being prepared is the config script.
+    - call: "security_bprm_check"
+      syscall: false
+      return: true
       args:
         - index: 0
-          type: "file"
-        - index: 1
-          type: "string"
+          type: "linux_binprm"
+      returnArg:
+        index: 0
+        type: "int"
       selectors:
-        - matchBinaries:
-            - operator: "In"
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
               values:
                 - "/usr/local/bin/config"
+          matchActions:
+            - action: Override
+              argError: -13
+        - matchArgs:
+            - index: 0
+              operator: "Equal"
+              values:
                 - "/usr/bin/config"
           matchActions:
-            - action: Sigkill
+            - action: Override
+              argError: -13
 
-        - matchBinaries:
-            - operator: "In"
-              values:
-                - "/usr/bin/python3"
-                - "/usr/local/bin/python3"
-          matchArgs:
+    # Backup: block when creds are loaded from the config script file (shebang path).
+    - call: "security_bprm_creds_from_file"
+      syscall: false
+      return: true
+      args:
+        - index: 0
+          type: "nop"
+        - index: 1
+          type: "file"
+      returnArg:
+        index: 0
+        type: "int"
+      selectors:
+        - matchArgs:
             - index: 1
               operator: "Equal"
               values:
                 - "/usr/local/bin/config"
           matchActions:
-            - action: Sigkill
-
-        - matchBinaries:
-            - operator: "In"
-              values:
-                - "/usr/bin/python3"
-                - "/usr/local/bin/python3"
-          matchArgs:
+            - action: Override
+              argError: -13
+        - matchArgs:
             - index: 1
               operator: "Equal"
               values:
                 - "/usr/bin/config"
           matchActions:
-            - action: Sigkill
-
-        - matchBinaries:
-            - operator: "In"
-              values:
-                - "/usr/bin/python3"
-                - "/usr/local/bin/python3"
-          matchArgs:
-            - index: 1
-              operator: "Postfix"
-              values:
-                - "/config"
-          matchActions:
-            - action: Sigkill
+            - action: Override
+              argError: -13

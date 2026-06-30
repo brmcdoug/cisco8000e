@@ -1,61 +1,53 @@
-# Observe-only: log exec of SONiC config CLI without blocking (for tuning paths).
+# Observe-only: log when SONiC config CLI is about to exec (for tuning paths).
+#
+# Uses security_bprm_check (linux_binprm path) — not sys_execve, which misses
+# Python shebang scripts on this kernel.
 apiVersion: cilium.io/v1alpha1
 kind: TracingPolicy
 metadata:
   name: deny-sonic-config-observe
 spec:
   kprobes:
-    - call: "sys_execve"
-      syscall: true
+    - call: "security_bprm_check"
+      syscall: false
       args:
         - index: 0
-          type: "file"
-        - index: 1
-          type: "string"
+          type: "linux_binprm"
       selectors:
-        - matchBinaries:
-            - operator: "In"
-              values:
-                - "/usr/local/bin/config"
-                - "/usr/bin/config"
-          matchActions:
-            - action: Post
-
-        - matchBinaries:
-            - operator: "In"
-              values:
-                - "/usr/bin/python3"
-                - "/usr/local/bin/python3"
-          matchArgs:
-            - index: 1
+        - matchArgs:
+            - index: 0
               operator: "Equal"
               values:
                 - "/usr/local/bin/config"
           matchActions:
             - action: Post
-
-        - matchBinaries:
-            - operator: "In"
-              values:
-                - "/usr/bin/python3"
-                - "/usr/local/bin/python3"
-          matchArgs:
-            - index: 1
+        - matchArgs:
+            - index: 0
               operator: "Equal"
               values:
                 - "/usr/bin/config"
           matchActions:
             - action: Post
 
-        - matchBinaries:
-            - operator: "In"
-              values:
-                - "/usr/bin/python3"
-                - "/usr/local/bin/python3"
-          matchArgs:
+    - call: "security_bprm_creds_from_file"
+      syscall: false
+      args:
+        - index: 0
+          type: "nop"
+        - index: 1
+          type: "file"
+      selectors:
+        - matchArgs:
             - index: 1
-              operator: "Postfix"
+              operator: "Equal"
               values:
-                - "/config"
+                - "/usr/local/bin/config"
+          matchActions:
+            - action: Post
+        - matchArgs:
+            - index: 1
+              operator: "Equal"
+              values:
+                - "/usr/bin/config"
           matchActions:
             - action: Post
