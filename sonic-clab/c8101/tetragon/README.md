@@ -1,5 +1,7 @@
 # Tetragon on virtualized SONiC (Containerlab c8101)
 
+**A POC collaboration with Cisco DSE Brian Shlisky**
+
 ### Architecture
 
 ```
@@ -125,9 +127,9 @@ sudo rm -f /home/admin/test/*
 Test:
 
 ```bash
-echo blocked | sudo tee /home/admin/test/nope.txt   # Permission denied; file should NOT appear
-echo ok | sudo tee /home/admin/ok.txt                 # still works
-sudo cp /home/admin/ok.txt /home/admin/test/copy.txt # Permission denied; no copy.txt
+echo blocked | sudo tee /home/admin/test/test1.txt   # Permission denied; file should NOT appear
+echo ok | sudo tee /home/admin/test2.txt                 # still works
+sudo cp /home/admin/test2.txt /home/admin/test/test2.txt # Permission denied; no copy.txt
 ls /home/admin/test                                  # should be empty (or only pre-existing allowed files)
 ```
 
@@ -204,6 +206,20 @@ Use `-observe.yaml` first to confirm `security_socket_connect` events in `tetra 
 /home/admin/tetragon/stop-tetragon.sh
 ```
 
+### Tetra CLI to see policies
+
+Overview
+```bash
+/home/admin/tetragon/tetra.sh tracingpolicy list
+```
+
+For more detail
+```bash
+/home/admin/tetragon/tetra.sh tracingpolicy list -o json | jq
+```
+
+
+
 Remove policies from `/home/admin/tetragon/policies/` and restart, or delete `/home/admin/tetragon` to fully uninstall.
 
 ## Files in this directory
@@ -257,3 +273,36 @@ cp /home/admin/tetragon/deny-write-home-admin-test-enforce.yaml \
 ```
 
 4. **Syscall Override not available** on this SONiC image — `sys_openat` + `Override` will always fail. Security hooks (`security_*`) still work.
+
+### Quick demo script
+
+1. Logging on terminal one
+```bash
+/home/admin/tetragon/tetra.sh getevents -o compact
+```
+
+2. Filesystem enforcement
+```bash
+echo blocked | sudo tee /home/admin/test/test1.txt   
+echo ok | sudo tee /home/admin/test2.txt                
+sudo cp /home/admin/test2.txt /home/admin/test/test2.txt 
+ls /home/admin/test                                  
+```
+
+3. CLI enforcement
+```bash
+show ip interfaces
+sudo config ip remove Ethernet16 9.9.9.1/24 
+```
+
+4. Outbound ssh
+```bash
+ip route
+ssh 10.1.1.0
+ssh 10.0.0.1
+```
+
+5. List policies
+```bash
+/home/admin/tetragon/tetra.sh tracingpolicy list
+```
